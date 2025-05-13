@@ -6,7 +6,7 @@ env:
   ECR_REPOSITORY: actapp
   ECS_SERVICE: vproapp-actions-svc
   ECS_CLUSTER: vproapp-actions
-  ECS_TASK_DEFINITION: aws-files-taskdeffile.json
+  ECS_TASK_DEFINITION: aws-files/taskdeffile.json
   CONTAINER_NAME: vproapp
    
 jobs:
