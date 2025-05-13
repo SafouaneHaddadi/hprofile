@@ -92,12 +92,12 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Fill in the new image ID in the Amazon ECS task definition
-        id: task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        id: task-def #id pour référencer la sortie de cette étape plus tard
+        uses: aws-actions/amazon-ecs-render-task-definition@v1 #Utilise l’action officielle AWS
         with:
           task-definition: ${{env.ECS_TASK_DEFINITION}}
-          container-name: ${{env.env.CONTAINER_NAME}}
-          image: ${{ secrets.REGISTRY }}/${{env.ECR_REPOSITORY}}:${{ github.run_number}}
+          container-name: ${{env.CONTAINER_NAME}}
+          image: ${{ secrets.REGISTRY }}/${{env.ECR_REPOSITORY}}:${{ github.run_number}} #chemin complet de l'image docker. ex: 23456789.dkr.ecr.us-east-1.amazonaws.com/actapp:12
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
