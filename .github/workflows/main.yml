@@ -2,6 +2,12 @@ name: Hprofile Actions
 on: workflow_dispatch
 env:
   AWS_REGION: us-east-1
+  ECR_REPOSITORY: actapp
+  ECS_SERVICE: vproapp-actions-svc
+  ECS_CLUSTER: vproapp-actions
+  ECS_TASK_DEFINITION: aws-files-taskdeffile.json
+  CONTAINER_NAMER: vproapp
+   
 jobs:
   Testing:
     runs-on: ubuntu-latest
@@ -47,6 +53,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_URL }} #OPTIONAL
 
+   #2eme job : 
   BUILD_AND_PUBLISH:
     needs: Testing #ce job sera executé uniquement lorsque le premier sera terminé
     runs-on: ubuntu-latest
@@ -74,4 +81,31 @@ jobs:
           daemon_off: false
           dockerfile: ./Dockerfile
           context: ./
+        
+  #3eme job : 
+
+  Deploy:
+    needs: BUILD_AND_PUBLISH #ce job sera executé uniquement lorsque le premier sera terminé
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code checkout
+        uses: actions/checkout@v4
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{env.ECS_TASK_DEFINITION}}
+          container-name: ${{env.env.CONTAINER_NAME}}
+          image: ${{ secrets.REGISTRY }}/${{env.ECR_REPOSITORY}}:${{ github.run_number}}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+         task-definition: ${{ steps.task-def.outputs.task-definition }}
+         service: ${{ env.ECS_SERVICE}}
+         cluster: ${{ env.ECS_CLUSTER}}
+         wait-for-service-stability: true #lorsque le service est stable ca signifie que tt va bien
+         #rappel : le svc vérifie le LB, le LB vérifie l'état des conteneurs 
+
         
