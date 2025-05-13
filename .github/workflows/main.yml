@@ -92,6 +92,16 @@ jobs:
       - name: Code checkout
         uses: actions/checkout@v4
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+         
+      #les 2 actions s'attendent à ce que les credentials AWS soient configurés via le provider officiel    
+      
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def #id pour référencer la sortie de cette étape plus tard
         uses: aws-actions/amazon-ecs-render-task-definition@v1 #Utilise l’action officielle AWS
