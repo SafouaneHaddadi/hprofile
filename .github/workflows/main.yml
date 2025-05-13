@@ -7,7 +7,7 @@ env:
   ECS_SERVICE: vproapp-actions-svc
   ECS_CLUSTER: vproapp-actions
   ECS_TASK_DEFINITION: aws-files-taskdeffile.json
-  CONTAINER_NAMER: vproapp
+  CONTAINER_NAME: vproapp
    
 jobs:
   Testing:
